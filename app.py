@@ -1,33 +1,34 @@
 from flask import Flask, render_template, request
 from decimal import Decimal, ROUND_HALF_UP
 import requests
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/convert', methods=['POST'])
 def convert():
     from_curr = request.form.get('from_currency')
     to_curr = request.form.get('to_currency')
     amount = request.form.get('amount')
-    
+
     if not all([from_curr, to_curr, amount]):
         return render_template('index.html', error='Пожалуйста, заполните все поля')
-    
+
     try:
         amount = float(amount)
         if amount <= 0:
             return render_template('index.html', error='Сумма должна быть положительным числом')
     except ValueError:
         return render_template('index.html', error='Сумма должна быть числом')
-    
+
     converted = None
     error = None
 
@@ -51,7 +52,7 @@ def convert():
 
         # Кэшируем курс на 1 час (простейшая оптимизация)
         # TODO: добавить Redis или просто словарь в памяти
-        
+
     return render_template(
         'index.html',
         from_curr=from_curr,
@@ -59,6 +60,7 @@ def convert():
         amount=amount,
         converted=converted
     )
+
 
 if __name__ == '__main__':
     app.run(debug=True)
