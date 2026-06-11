@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Конвертер валют — быстрый и точный</title>
+    <!-- Google Fonts + предзагрузка для скорости -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fe 0%, #eef2fa 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* основная карточка */
+        .glass-card {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.02);
+            padding: 2rem 1.8rem 2.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e2b6e, #2b3b8c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .subhead {
+            color: #5b6e8c;
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            border-left: 3px solid #3b6eff;
+            padding-left: 0.8rem;
+        }
+
+        /* стили формы */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2c3e66;
+            margin-bottom: 0.5rem;
+        }
+
+        label i {
+            font-style: normal;
+            font-size: 1.1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            background: #ffffffcc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem;
+            transition: all 0.2s ease;
+            outline: none;
+            color: #0f172a;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        input:focus, select:focus {
+            border-color: #3b6eff;
+            box-shadow: 0 0 0 3px rgba(59, 110, 255, 0.2);
+            background: white;
+        }
+
+        /* кастомные стрелки для select (легкий акцент) */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233b6eff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        /* стрелка между селектами */
+        .arrow-icon {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 300;
+            color: #3b6eff;
+            margin: 0.2rem 0;
+            display: block;
+        }
+
+        @media (min-width: 550px) {
+            .double-select {
+                display: flex;
+                gap: 1rem;
+                align-items: flex-end;
+            }
+            .double-select .form-group {
+                flex: 1;
+                margin-bottom: 1.2rem;
+            }
+            .arrow-icon {
+                margin-bottom: 1rem;
+                line-height: 1;
+            }
+        }
+
+        button {
+            background: linear-gradient(105deg, #1f3a7a, #2d4ed3);
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(45, 78, 211, 0.25);
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background: linear-gradient(105deg, #142c62, #1f3fbf);
+            transform: scale(0.98);
+            box-shadow: 0 6px 16px rgba(45, 78, 211, 0.3);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        /* результат */
+        .result-card {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 1.8rem;
+            padding: 1.2rem 1.5rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.3s ease;
+            animation: fadeSlideUp 0.3s ease-out;
+        }
+
+        .result-label {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            color: #3b6eff;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0b2a4f;
+            word-break: break-word;
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .converted-number {
+            background: linear-gradient(120deg, #0f2b5e, #1e3a8a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+
+        .currency-code {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #5a6e8a;
+        }
+
+        /* ошибка */
+        .error-message {
+            margin-top: 1.5rem;
+            background: #fff0f0;
+            border-left: 6px solid #ef4444;
+            padding: 0.9rem 1rem;
+            border-radius: 1.2rem;
+            color: #b91c1c;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* анимация появления */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #7c8aa5;
+            border-top: 1px solid #e0e8f5;
+            padding-top: 1.3rem;
+        }
+
+        /* адаптив */
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+            .result-value {
+                font-size: 1.6rem;
+            }
+            .converted-number {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+    <h1>
+        <span>💱</span> Конвертер валют
+    </h1>
+    <div class="subhead">Актуальные курсы Frankfurter • Мгновенно</div>
+
+    <form method="POST" action="/convert">
+        <div class="form-group">
+            <label><i>💰</i> Сумма</label>
+            <input type="number" name="amount" step="any" placeholder="Например, 100" value="{{ amount if amount else '' }}" required>
+        </div>
+
+        <div class="double-select">
+            <div class="form-group">
+                <label><i>📤</i> Из валюты</label>
+                <select name="from_currency" required>
+                    <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
+                    <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
+                    <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
+                </select>
+            </div>
+            <div class="arrow-icon">→</div>
+            <div class="form-group">
+                <label><i>📥</i> В валюту</label>
+                <select name="to_currency" required>
+                    <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
+                    <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
+                    <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit">
+            <span>🔄</span> Конвертировать
+        </button>
+    </form>
+
+    {% if converted %}
+    <div class="result-card">
+        <div class="result-label">✅ Текущий результат</div>
+        <div class="result-value">
+            <span>{{ amount }}</span>
+            <span class="currency-code">{{ from_curr }}</span>
+            <span>=</span>
+            <span class="converted-number">{{ converted }}</span>
+            <span class="currency-code">{{ to_curr }}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-message">
+        <span>⚠️</span> {{ error }}
+    </div>
+    {% endif %}
+
+    <footer>
+        Курсы валют от Frankfurter API (обновляются ежедневно)
+    </footer>
+</div>
+</body>
+</html>
