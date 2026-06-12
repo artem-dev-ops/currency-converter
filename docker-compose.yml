@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  currency-converter:
+    image: ${DOCKER_IMAGE:-artemdevopscom/currency-converter}:${IMAGE_TAG:-latest}
+    container_name: currency-converter
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: '0.5
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"    
