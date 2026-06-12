@@ -43,6 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Lint Dockerfile with hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+          no-fail: false
       - name: Build image for scan
         run: docker build -t ${{ env.DOCKER_IMAGE }}:test .
       - name: Run Trivy
@@ -107,4 +113,6 @@ jobs:
             cd /opt/currency-converter
             docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
             docker compose --compatibility up -d --force-recreate
+            sleep 3
+            docker exec currency-converter curl -f http://localhost:5000 > /dev/null || (docker logs currency-converter --tail 50 && exit 1)
             docker image prune -f --filter "until=72h"
