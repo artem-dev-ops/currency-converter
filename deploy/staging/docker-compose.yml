@@ -1,0 +1,47 @@
+services:
+  currency-converter:
+    image: ${DOCKER_IMAGE:-artemdevopscom/currency-converter}:${IMAGE_TAG:-latest}
+    container_name: currency-converter-staging
+    restart: unless-stopped
+    networks:
+      - webnet
+    mem_limit: 256m
+    cpus: '0.5'
+    environment:
+      - GUNICORN_WORKERS=1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-staging
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+    networks:
+      - webnet
+    depends_on:
+      - currency-converter
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot-staging
+    restart: unless-stopped
+    volumes:
+      - ./certbot/www:/var/www/certbot:rw
+      - ./certbot/conf:/etc/letsencrypt:rw
+    networks:
+      - webnet
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+networks:
+  webnet:

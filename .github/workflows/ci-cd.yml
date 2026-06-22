@@ -43,12 +43,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Lint Dockerfile with hadolint
+      - name: Lint Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          failure-threshold: error
-          no-fail: false
+          failure-threshold: warning
       - name: Build image for scan
         run: docker build -t ${{ env.DOCKER_IMAGE }}:test .
       - name: Run Trivy
@@ -89,16 +88,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Copy docker-compose.yml to server
+
+      - name: Copy deployment files to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "docker-compose.yml"
-          target: "/opt/currency-converter/"
-          strip_components: 0
+          source: "deploy/staging/*"
+          target: "/opt/currency-converter-staging/"
+          strip_components: 2
+
       - name: Deploy to Staging VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -110,9 +111,9 @@ jobs:
             set -e
             export DOCKER_IMAGE=${{ env.DOCKER_IMAGE }}
             export IMAGE_TAG=${{ github.sha }}
-            cd /opt/currency-converter
+            cd /opt/currency-converter-staging
             docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
             docker compose --compatibility up -d --force-recreate
             sleep 3
-            docker exec currency-converter curl -f http://localhost:5000 > /dev/null || (docker logs currency-converter --tail 50 && exit 1)
+            docker exec currency-converter-staging curl -f http://localhost:5000 > /dev/null || (docker logs currency-converter-staging --tail 50 && exit 1)
             docker image prune -f --filter "until=72h"
