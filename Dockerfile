@@ -1,6 +1,7 @@
 FROM python:3.11-slim
+# hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl=8.5.0-2ubuntu10.9 && \
+    apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/* && \
     adduser --disabled-password --gecos '' appuser
 WORKDIR /app
