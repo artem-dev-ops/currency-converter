@@ -96,9 +96,9 @@ jobs:
           username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "deploy/staging/"
+          source: "deploy/staging/*"
           target: "/opt/currency-converter-staging/"
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy to Staging VPS
         uses: appleboy/ssh-action@v1.0.3
