@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  DOCKER_IMAGE: artemdevopscom/currency-converter
+
 jobs:
   deploy-production:
     environment: production
