@@ -32,15 +32,16 @@ def convert():
         return render_template('index.html', error='Сумма должна быть числом')
 
     converted = None
+    rate = None
     error = None
 
     try:
         url = f'https://api.frankfurter.dev/v2/rate/{from_curr}/{to_curr}'
         response = requests.get(url, timeout=5)
         data = response.json()
-        rate = Decimal(str(data['rate']))
-        amount = Decimal(str(amount))
-        converted = (amount * rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        rate = Decimal(str(data['rate']))          # курс
+        amount_dec = Decimal(str(amount))
+        converted = (amount_dec * rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     except KeyError as e:
         error = f"Не удалось получить курс для пары {from_curr}/{to_curr}. Проверьте правильность кодов валют."
@@ -52,15 +53,14 @@ def convert():
     if error:
         return render_template('index.html', error=error)
 
-        # Кэшируем курс на 1 час (простейшая оптимизация)
-        # TODO: добавить Redis или просто словарь в памяти
-
+    # Передаём в шаблон все данные, включая rate
     return render_template(
         'index.html',
         from_curr=from_curr,
         to_curr=to_curr,
         amount=amount,
-        converted=converted
+        converted=converted,
+        rate=rate  # ← добавляем курс
     )
 
 

@@ -27,7 +27,6 @@
             padding: 1.5rem;
         }
 
-        /* основная карточка */
         .glass-card {
             max-width: 600px;
             width: 100%;
@@ -63,7 +62,6 @@
             padding-left: 0.8rem;
         }
 
-        /* стили формы */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -106,7 +104,6 @@
             background: white;
         }
 
-        /* кастомные стрелки для select (легкий акцент) */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233b6eff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
@@ -115,8 +112,9 @@
             background-size: 1.2rem;
         }
 
-        /* стрелка между селектами */
         .arrow-icon {
+            flex-shrink: 0;
+            min-width: 2rem;
             text-align: center;
             font-size: 1.7rem;
             font-weight: 300;
@@ -170,7 +168,6 @@
             transform: scale(0.96);
         }
 
-        /* результат */
         .result-card {
             margin-top: 2rem;
             background: rgba(255, 255, 255, 0.7);
@@ -216,7 +213,6 @@
             color: #5a6e8a;
         }
 
-        /* ошибка */
         .error-message {
             margin-top: 1.5rem;
             background: #fff0f0;
@@ -231,7 +227,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* анимация появления */
         @keyframes fadeSlideUp {
             from {
                 opacity: 0;
@@ -252,7 +247,6 @@
             padding-top: 1.3rem;
         }
 
-        /* адаптив */
         @media (max-width: 480px) {
             .glass-card {
                 padding: 1.5rem;
@@ -268,7 +262,6 @@
             }
         }
 
-        /* дополнительный стиль для плашки (можно и в inline) */
         .staging-badge {
             padding: 0.6rem 1.2rem;
             margin-top: 0.5rem;
@@ -302,28 +295,29 @@
     <form method="POST" action="/convert">
         <div class="form-group">
             <label><i>💰</i> Сумма</label>
-            <input type="number" name="amount" step="any" placeholder="Например, 100" value="{{ amount if amount else '' }}" required>
+            <input type="number" name="amount" step="any" min="0" placeholder="Например, 100" value="{{ amount if amount else '' }}" required>
         </div>
 
         <div class="double-select">
             <div class="form-group">
                 <label><i>📤</i> Из валюты</label>
                 <select name="from_currency" required>
-                    <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
-                    <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
-                    <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-                    <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY — Турецкая лира</option>  
-                    <option value="CNY" {% if from_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY — Китайский юань</option>
+                    <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD</option>
+                    <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR</option>
+                    <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB</option>
+                    <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY</option>
+                    <option value="CNY" {% if from_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY</option>
                 </select>
             </div>
             <div class="arrow-icon">→</div>
             <div class="form-group">
                 <label><i>📥</i> В валюту</label>
                 <select name="to_currency" required>
-                    <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
-                    <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
-                    <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-                    <option value="CNY" {% if to_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY — Китайский юань</option>
+                    <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD</option>
+                    <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR</option>
+                    <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB</option>
+                    <option value="TRY" {% if to_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY</option>
+                    <option value="CNY" {% if to_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY</option>
                 </select>
             </div>
         </div>
@@ -343,6 +337,11 @@
             <span class="converted-number">{{ converted }}</span>
             <span class="currency-code">{{ to_curr }}</span>
         </div>
+        {% if rate %}
+        <div style="margin-top: 0.6rem; font-size: 0.85rem; color: #3b6eff; text-align: center;">
+            1 {{ from_curr }} ≈ {{ "%.4f"|format(rate) }} {{ to_curr }}
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 
