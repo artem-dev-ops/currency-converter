@@ -51,16 +51,16 @@ def convert():
         print(f"RequestException: {e}")
 
     if error:
-        return render_template('index.html', error=error)
+        return render_template('index.html', error=error, env=APP_ENV)
 
-    # Передаём в шаблон все данные, включая rate
     return render_template(
         'index.html',
         from_curr=from_curr,
         to_curr=to_curr,
         amount=amount,
         converted=converted,
-        rate=rate  # ← добавляем курс
+        rate=rate,
+        env=APP_ENV
     )
 
 
