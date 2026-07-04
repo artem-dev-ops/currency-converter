@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>STAGING! Конвертер валют — быстрый и точный</title>
+    <title>
+        {% if env == 'staging' %}STAGING! {% endif %}
+        Конвертер валют — быстрый и точный
+    </title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.svg') }}">
     <!-- Google Fonts + предзагрузка для скорости -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
@@ -263,6 +267,23 @@
                 font-size: 1.8rem;
             }
         }
+
+        /* дополнительный стиль для плашки (можно и в inline) */
+        .staging-badge {
+            padding: 0.6rem 1.2rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 200, 0, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            color: #8a6d00;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(255, 200, 0, 0.08);
+            text-align: center;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -271,6 +292,12 @@
         <span>💱</span> Конвертер валют
     </h1>
     <div class="subhead">Актуальные курсы Frankfurter • Мгновенно</div>
+
+    {% if env == 'staging' %}
+    <div class="staging-badge">
+        <span style="margin-right: 0.5rem;">⚠️</span> СТЕЙДЖИНГ · тестовый сервер
+    </div>
+    {% endif %}
 
     <form method="POST" action="/convert">
         <div class="form-group">
@@ -285,7 +312,7 @@
                     <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
                     <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
                     <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-		            <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY — Турецкая лира</option>  
+                    <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY — Турецкая лира</option>  
                     <option value="CNY" {% if from_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY — Китайский юань</option>
                 </select>
             </div>
@@ -296,7 +323,7 @@
                     <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
                     <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
                     <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-		            <option value="CNY" {% if to_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY — Китайский юань</option>
+                    <option value="CNY" {% if to_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY — Китайский юань</option>
                 </select>
             </div>
         </div>
