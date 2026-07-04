@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request
 from decimal import Decimal, ROUND_HALF_UP
 import requests
@@ -6,11 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+APP_ENV = os.getenv('APP_ENV', 'production')
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html',
+                            env=APP_ENV)
 
 
 @app.route('/convert', methods=['POST'])

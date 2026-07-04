@@ -9,6 +9,7 @@ services:
     cpus: '0.5'
     environment:
       - GUNICORN_WORKERS=1
+      - APP_ENV=staging
     logging:
       driver: "json-file"
       options:
