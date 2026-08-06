@@ -2,6 +2,6 @@ githubConfigUrl: "https://github.com/artem-dev-ops/currency-converter"
 githubConfigSecret: github-pat-secret
 minRunners: 1
 maxRunners: 5
-scaleSetLabels:
+githubConfigLabels:
   - k3s
   - self-hosted
