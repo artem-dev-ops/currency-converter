@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: currency-converter
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - env: dev
+        namespace: dev
+        path: deploy/kubernetes/overlays/dev
+      - env: staging
+        namespace: staging
+        path: deploy/kubernetes/overlays/staging
+      - env: production
+        namespace: production
+        path: deploy/kubernetes/overlays/production
+  template:
+    metadata:
+      name: 'currency-converter-{{env}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/artem-dev-ops/currency-converter.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true

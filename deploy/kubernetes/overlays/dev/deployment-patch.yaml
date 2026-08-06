@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency-converter
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: app
+        image: artemdevopscom/currency-converter:latest
+        env:
+        - name: APP_ENV
+          value: "development"
+        - name: GUNICORN_WORKERS
+          value: "1"

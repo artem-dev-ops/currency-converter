@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: currency-converter
+spec:
+  tls:
+  - hosts:
+    - fx-dev.artemdevops.online
+    secretName: currency-converter-tls
+  rules:
+  - host: fx-dev.artemdevops.online
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: currency-converter
+            port:
+              number: 80
