@@ -36,6 +36,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add deploy/kubernetes/overlays/*/deployment.yaml
+          git add deploy/kubernetes/overlays/*/deployment-patch.yaml
           git commit -m "Update image tag to ${{ github.sha }}"
           git push
