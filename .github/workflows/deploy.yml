@@ -30,7 +30,7 @@ jobs:
       - name: Update image tag in Kustomize manifests
         run: |
           # Обновляем тег образа в Kustomize overlays
-          sed -i "s|artemdevopscom/currency-converter:.*|artemdevopscom/currency-converter:${{ github.sha }}|g" deploy/kubernetes/overlays/*/deployment.yaml
+          sed -i "s|artemdevopscom/currency-converter:.*|artemdevopscom/currency-converter:${{ github.sha }}|g" deploy/kubernetes/overlays/*/deployment-patch.yaml
 
       - name: Commit and push changes back to repo
         run: |
