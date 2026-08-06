@@ -6,7 +6,8 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: [self-hosted, k3s] 
+    runs-on: ubuntu-latest
+    # runs-on: [self-hosted, k3s] actions are down :( https://www.githubstatus.com/incidents/qcvjkzcs7j74
     permissions:
       contents: write
     steps:
