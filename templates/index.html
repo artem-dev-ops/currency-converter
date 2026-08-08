@@ -279,7 +279,7 @@
             }
         }
 
-        .staging-badge {
+        .test-server-badge {
             padding: 0.6rem 1.2rem;
             margin-top: 0.5rem;
             margin-bottom: 1.5rem;
@@ -303,14 +303,14 @@
     </h1>
     <div class="subhead">Актуальные курсы Frankfurter • Мгновенно</div>
 
-    {% if env == 'developmentj' %}
-    <div class="development-badge">
+    {% if env == 'development' %}
+    <div class="test-server-badge">
         <span style="margin-right: 0.5rem;">⚠️</span> РАЗРАБОТКА · тестовый сервер
     </div>
     {% endif %}
 
     {% if env == 'staging' %}
-    <div class="staging-badge">
+    <div class="test-server-badge">
         <span style="margin-right: 0.5rem;">⚠️</span> СТЕЙДЖИНГ · тестовый сервер
     </div>
     {% endif %}
