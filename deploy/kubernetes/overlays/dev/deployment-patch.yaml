@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: artemdevopscom/currency-converter:0b3a5f29f4d5838d99da1b94f6a0a0ad7b0e45a5
+        image: artemdevopscom/currency-converter:1408ea6d575e6d15805205acbcc46b38d3939e69
         env:
         - name: APP_ENV
           value: "development"
