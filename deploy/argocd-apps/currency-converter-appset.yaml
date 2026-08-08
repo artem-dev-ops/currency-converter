@@ -10,12 +10,15 @@ spec:
       - env: dev
         namespace: dev
         path: deploy/kubernetes/overlays/dev
+        revision: dev
       - env: staging
         namespace: staging
         path: deploy/kubernetes/overlays/staging
+        revision: staging
       - env: production
         namespace: production
         path: deploy/kubernetes/overlays/production
+        revision: main
   template:
     metadata:
       name: 'currency-converter-{{env}}'
@@ -23,7 +26,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/artem-dev-ops/currency-converter.git
-        targetRevision: HEAD
+        targetRevision: '{{revision}}' 
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
