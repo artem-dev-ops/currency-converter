@@ -6,7 +6,8 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: [self-hosted, k3s]
+    # runs-on: [self-hosted, k3s] not working yet
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     env:

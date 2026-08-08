@@ -1,0 +1,19 @@
+apiVersion: actions.github.com/v1alpha1
+kind: AutoScalingRunnerSet
+metadata:
+  name: arc-runner-set
+  namespace: arc-runners
+spec:
+  githubConfigUrl: "https://github.com/artem-dev-ops/currency-converter"
+  githubConfigSecret: github-pat-secret
+  minRunners: 1
+  maxRunners: 5
+  template:
+    spec:
+      containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:latest
+        command: ["/home/runner/run.sh"]
+        env:
+        - name: ACTIONS_RUNNER_INPUT_LABELS
+          value: "k3s,self-hosted"
