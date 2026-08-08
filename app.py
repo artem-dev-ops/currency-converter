@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from decimal import Decimal, ROUND_HALF_UP
 import requests
 from dotenv import load_dotenv
@@ -12,6 +12,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('static', 'favicon.ico')
 
 @app.route('/convert', methods=['POST'])
 def convert():
