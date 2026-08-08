@@ -303,6 +303,12 @@
     </h1>
     <div class="subhead">Актуальные курсы Frankfurter • Мгновенно</div>
 
+    {% if env == 'developmentj' %}
+    <div class="development-badge">
+        <span style="margin-right: 0.5rem;">⚠️</span> РАЗРАБОТКА · тестовый сервер
+    </div>
+    {% endif %}
+
     {% if env == 'staging' %}
     <div class="staging-badge">
         <span style="margin-right: 0.5rem;">⚠️</span> СТЕЙДЖИНГ · тестовый сервер
