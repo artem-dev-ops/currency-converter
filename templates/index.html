@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Конвертер валют</title>
+    <title>
+        {% if env == 'staging' %}STAGING! {% endif %}
+        {% if env == 'development' %}DEVELOPMENT! {% endif %}
+        Конвертер валют — быстрый и точный
+    </title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.svg') }}">
     <!-- Google Fonts + предзагрузка для скорости -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.svg') }}">
@@ -24,7 +29,6 @@
             padding: 1.5rem;
         }
 
-        /* основная карточка */
         .glass-card {
             max-width: 600px;
             width: 100%;
@@ -60,7 +64,6 @@
             padding-left: 0.8rem;
         }
 
-        /* стили формы */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -103,7 +106,6 @@
             background: white;
         }
 
-        /* кастомные стрелки для select (легкий акцент) */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233b6eff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
@@ -112,28 +114,43 @@
             background-size: 1.2rem;
         }
 
-        /* стрелка между селектами */
         .arrow-icon {
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+            flex-shrink: 0;
+            min-width: 2rem;
             text-align: center;
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             font-weight: 300;
             color: #3b6eff;
-            margin: 0.2rem 0;
-            display: block;
+            line-height: 1;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow-icon:hover {
+            transform: scale(1.2);
+            color: #1f3fbf;
+        }
+
+        .arrow-icon:active {
+            transform: scale(0.9);
         }
 
         @media (min-width: 550px) {
             .double-select {
                 display: flex;
                 gap: 1rem;
-                align-items: flex-end;
+                align-items: center;
             }
             .double-select .form-group {
                 flex: 1;
                 margin-bottom: 1.2rem;
             }
             .arrow-icon {
-                margin-bottom: 1rem;
+                margin-bottom: 0;
                 line-height: 1;
             }
         }
@@ -167,7 +184,6 @@
             transform: scale(0.96);
         }
 
-        /* результат */
         .result-card {
             margin-top: 2rem;
             background: rgba(255, 255, 255, 0.7);
@@ -175,11 +191,11 @@
             padding: 1.2rem 1.5rem;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.6);
-            transition: all 0.3s ease;
-            animation: fadeSlideUp 0.3s ease-out;
+            transition: opacity 0.2s ease;
         }
 
         .result-label {
+            text-align: center;
             text-transform: uppercase;
             font-size: 0.7rem;
             letter-spacing: 1px;
@@ -197,6 +213,7 @@
             align-items: baseline;
             flex-wrap: wrap;
             gap: 0.4rem;
+            justify-content: center;
         }
 
         .converted-number {
@@ -213,7 +230,6 @@
             color: #5a6e8a;
         }
 
-        /* ошибка */
         .error-message {
             margin-top: 1.5rem;
             background: #fff0f0;
@@ -228,7 +244,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* анимация появления */
         @keyframes fadeSlideUp {
             from {
                 opacity: 0;
@@ -249,7 +264,6 @@
             padding-top: 1.3rem;
         }
 
-        /* адаптив */
         @media (max-width: 480px) {
             .glass-card {
                 padding: 1.5rem;
@@ -264,6 +278,22 @@
                 font-size: 1.8rem;
             }
         }
+
+        .staging-badge {
+            padding: 0.6rem 1.2rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 200, 0, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            color: #8a6d00;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(255, 200, 0, 0.08);
+            text-align: center;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -273,30 +303,38 @@
     </h1>
     <div class="subhead">Актуальные курсы Frankfurter • Мгновенно</div>
 
+    {% if env == 'staging' %}
+    <div class="staging-badge">
+        <span style="margin-right: 0.5rem;">⚠️</span> СТЕЙДЖИНГ · тестовый сервер
+    </div>
+    {% endif %}
+
     <form method="POST" action="/convert">
         <div class="form-group">
             <label><i>💰</i> Сумма</label>
-            <input type="number" name="amount" step="any" placeholder="Например, 100" value="{{ amount if amount else '' }}" required>
+            <input type="number" name="amount" step="any" min="0" placeholder="Например, 100" value="{{ amount if amount else '' }}" required>
         </div>
 
         <div class="double-select">
             <div class="form-group">
                 <label><i>📤</i> Из валюты</label>
                 <select name="from_currency" required>
-                    <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
-                    <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
-                    <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-		    <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY — Турецкая лира</option>  
+                    <option value="USD" {% if from_curr == 'USD' %}selected{% endif %}>🇺🇸 USD</option>
+                    <option value="EUR" {% if from_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR</option>
+                    <option value="RUB" {% if from_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB</option>
+                    <option value="TRY" {% if from_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY</option>
+                    <option value="CNY" {% if from_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY</option>
                 </select>
             </div>
-            <div class="arrow-icon">→</div>
+            <div class="arrow-icon">⇄</div>
             <div class="form-group">
                 <label><i>📥</i> В валюту</label>
                 <select name="to_currency" required>
-                    <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD — Доллар США</option>
-                    <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR — Евро</option>
-                    <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB — Российский рубль</option>
-		    <option value="TRY" {% if to_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY — Турецкая лира</option>
+                    <option value="USD" {% if to_curr == 'USD' %}selected{% endif %}>🇺🇸 USD</option>
+                    <option value="EUR" {% if to_curr == 'EUR' %}selected{% endif %}>🇪🇺 EUR</option>
+                    <option value="RUB" {% if to_curr == 'RUB' %}selected{% endif %}>🇷🇺 RUB</option>
+                    <option value="TRY" {% if to_curr == 'TRY' %}selected{% endif %}>🇹🇷 TRY</option>
+                    <option value="CNY" {% if to_curr == 'CNY' %}selected{% endif %}>🇨🇳 CNY</option>
                 </select>
             </div>
         </div>
@@ -316,6 +354,11 @@
             <span class="converted-number">{{ converted }}</span>
             <span class="currency-code">{{ to_curr }}</span>
         </div>
+        {% if rate %}
+        <div style="margin-top: 0.6rem; font-size: 0.85rem; color: #3b6eff; text-align: center;">
+            1 {{ from_curr }} ≈ {{ "%.4f"|format(rate) }} {{ to_curr }}
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 
@@ -329,5 +372,42 @@
         Курсы валют от Frankfurter API (обновляются ежедневно)
     </footer>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const arrow = document.querySelector('.arrow-icon');
+        const fromSelect = document.querySelector('select[name="from_currency"]');
+        const toSelect = document.querySelector('select[name="to_currency"]');
+        const form = document.querySelector('form');
+
+        if (arrow && fromSelect && toSelect && form) {
+            let isProcessing = false;
+
+            arrow.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (isProcessing) return;
+                isProcessing = true;
+
+                const fromVal = fromSelect.value;
+                const toVal = toSelect.value;
+                fromSelect.value = toVal;
+                toSelect.value = fromVal;
+
+                arrow.style.transition = 'transform 0.2s ease';
+                arrow.style.transform = 'rotate(180deg)';
+
+                setTimeout(() => {
+                    arrow.style.transform = 'rotate(0deg)';
+                    const amountInput = document.querySelector('input[name="amount"]');
+                    if (amountInput && amountInput.value && parseFloat(amountInput.value) > 0) {
+                        form.submit();
+                    } else {
+                        isProcessing = false;
+                    }
+                }, 200);
+            });
+        }
+    });
+</script>
 </body>
 </html>

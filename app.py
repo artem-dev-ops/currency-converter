@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, send_from_directory
+import os
 from decimal import Decimal, ROUND_HALF_UP
 import requests
 from dotenv import load_dotenv
@@ -6,11 +7,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+APP_ENV = os.getenv('APP_ENV', 'production')
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', env=APP_ENV)
 
 
 @app.route('/favicon.ico')
@@ -34,15 +36,16 @@ def convert():
         return render_template('index.html', error='Сумма должна быть числом')
 
     converted = None
+    rate = None
     error = None
 
     try:
         url = f'https://api.frankfurter.dev/v2/rate/{from_curr}/{to_curr}'
         response = requests.get(url, timeout=5)
         data = response.json()
-        rate = Decimal(str(data['rate']))
-        amount = Decimal(str(amount))
-        converted = (amount * rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        rate = Decimal(str(data['rate']))          # курс
+        amount_dec = Decimal(str(amount))
+        converted = (amount_dec * rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     except KeyError as e:
         error = f"Не удалось получить курс для пары {from_curr}/{to_curr}. Проверьте правильность кодов валют."
@@ -52,17 +55,16 @@ def convert():
         print(f"RequestException: {e}")
 
     if error:
-        return render_template('index.html', error=error)
-
-        # Кэшируем курс на 1 час (простейшая оптимизация)
-        # TODO: добавить Redis или просто словарь в памяти
+        return render_template('index.html', error=error, env=APP_ENV)
 
     return render_template(
         'index.html',
         from_curr=from_curr,
         to_curr=to_curr,
         amount=amount,
-        converted=converted
+        converted=converted,
+        rate=rate,
+        env=APP_ENV
     )
 
 
