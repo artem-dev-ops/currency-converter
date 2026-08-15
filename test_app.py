@@ -83,3 +83,60 @@ def test_convert_request_exception(mock_get, client):
         'amount': '100'
     })
     assert 'Ошибка соединения с сервисом курсов валют' in response.text
+
+
+def test_convert_rejects_unknown_currency(client):
+    response = client.post('/convert', data={
+        'from_currency': 'USD',
+        'to_currency': 'ZZZ',
+        'amount': '100'
+    })
+    assert 'Неподдерживаемый код валюты' in response.text
+
+
+def test_favicon_redirects_to_svg(client):
+    response = client.get('/favicon.ico')
+    assert response.status_code == 302
+    assert response.headers['Location'].endswith('favicon.svg')
+
+
+def test_security_headers_present(client):
+    response = client.get('/')
+    assert response.headers['X-Content-Type-Options'] == 'nosniff'
+    assert response.headers['X-Frame-Options'] == 'DENY'
+
+
+@patch('app.requests.get')
+def test_api_convert_success(mock_get, client):
+    mock_response = MagicMock()
+    mock_response.json.return_value = {'rate': 0.85}
+    mock_get.return_value = mock_response
+
+    response = client.post('/api/convert', data={
+        'from_currency': 'USD',
+        'to_currency': 'EUR',
+        'amount': '100'
+    })
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload['converted'] == '85.00'
+    assert payload['rate'] == '0.8500'
+
+
+def test_api_convert_rejects_unknown_currency(client):
+    response = client.post('/api/convert', data={
+        'from_currency': 'USD',
+        'to_currency': 'ZZZ',
+        'amount': '100'
+    })
+    assert response.status_code == 400
+    assert 'Неподдерживаемый код валюты' in response.get_json()['error']
+
+
+def test_api_convert_missing_fields(client):
+    response = client.post('/api/convert', data={
+        'from_currency': 'USD',
+        'to_currency': 'EUR',
+        'amount': ''
+    })
+    assert response.status_code == 400
